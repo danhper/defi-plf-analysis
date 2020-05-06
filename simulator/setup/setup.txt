@@ -1,0 +1,1 @@
+nvm use 12 && ganache-cli --fork http://satoshi.doc.ic.ac.uk:8545@10000000
