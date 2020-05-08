@@ -28,6 +28,12 @@ variables = ['total_borrows_history', 'total_supply_history', 'utilization_ratio
 
 url = 'https://api.compound.finance/api/v2/market_history/graph'
 
+end_date = int(dt.datetime(2020, 7, 5, 0).timestamp())
+start_date = int((dt.datetime(2020, 7, 5, 0) - dt.timedelta(days = 1000)).timestamp())
+
+list_dates = list(pairwise(generate_dates(start=start_date, 
+                    end=end_date, buckets_count=1000)))
+
 def generate_dates(start: dt.datetime, end: dt.datetime,
                    buckets_count: int) -> Iterable[dt.datetime]:
     """Generates a list of ``buckets_count + 1`` dates between
@@ -54,14 +60,6 @@ def pairwise(iterable: Iterable[T]) -> Iterable[Tuple[T, T]]:
 
 def format_date(x, pos=None):
      return dates.num2date(x).strftime('%Y-%m-%d')
-
-end_date = int(dt.datetime(2020, 7, 5, 0).timestamp())
-start_date = int((dt.datetime(2020, 7, 5, 0) - dt.timedelta(days = 365)).timestamp())
-
-list_dates = list(pairwise(generate_dates(start=start_date, 
-                    end=end_date, buckets_count=365)))
-
-# faulty = [(1588894488.0, 1588980852.0)]
 
 def make_dataframe(token: str, days):
     '''
@@ -112,13 +110,13 @@ def make_dataframe(token: str, days):
         df['spread'] = df['borrow_rates']- df['supply_rates']
 
         master_df = master_df.append(df)
+    
+    master_df.to_pickle('./data/' + str(token) + '.pkl')
 
-    return master_df
+for token in token_addresses:
+    make_dataframe(token=token, days=list_dates)
 
-df.to_pickle('./data/market_history_data.pkl')
-df2 = pd.read_pickle('./data/market_history_data.pkl')
-
-
+# df2 = pd.read_pickle('./data/market_history_data.pkl')
 
 def plot_utilization_vs_rate(token: str):
     '''
