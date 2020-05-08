@@ -116,7 +116,7 @@ def make_dataframe(token: str, days):
 for token in token_addresses:
     make_dataframe(token=token, days=list_dates)
 
-# df2 = pd.read_pickle('./data/market_history_data.pkl')
+df2 = pd.read_pickle('./data/cusdc.pkl')
 
 def plot_utilization_vs_rate(token: str):
     '''
