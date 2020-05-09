@@ -1,1 +1,2 @@
 aave/aave.jsonl filter=lfs diff=lfs merge=lfs -text
+dydx/data/*.gz filter=lfs diff=lfs merge=lfs -text
