@@ -1,2 +1,15 @@
 aave/aave.jsonl filter=lfs diff=lfs merge=lfs -text
 dydx/data/*.gz filter=lfs diff=lfs merge=lfs -text
+data/aave/aave.jsonl filter=lfs diff=lfs merge=lfs -text
+data/compound/cdai.pkl filter=lfs diff=lfs merge=lfs -text
+data/compound/ceth.pkl filter=lfs diff=lfs merge=lfs -text
+data/compound/crep.pkl filter=lfs diff=lfs merge=lfs -text
+data/compound/csai.pkl filter=lfs diff=lfs merge=lfs -text
+data/compound/cusdc.pkl filter=lfs diff=lfs merge=lfs -text
+data/compound/cwbtc.pkl filter=lfs diff=lfs merge=lfs -text
+data/compound/czrx.pkl filter=lfs diff=lfs merge=lfs -text
+data/compound/cbat.pkl filter=lfs diff=lfs merge=lfs -text
+data/dydx/usdc_market_dydx.csv.gz filter=lfs diff=lfs merge=lfs -text
+data/dydx/weth_market_dydx.csv.gz filter=lfs diff=lfs merge=lfs -text
+data/dydx/dai_market_dydx.csv.gz filter=lfs diff=lfs merge=lfs -text
+data/dydx/eth_block_times.csv.gz filter=lfs diff=lfs merge=lfs -text
