@@ -17,3 +17,12 @@ USD_PRICES = {
     "ETH": 211.83,
     "WETH": 211.83,
 }
+
+COMPOUND_TOKEN_TRANSLATOR = {'ceth': 'eth',
+                            'cbat': 'bat',
+                            'czrx': 'zrx',
+                            'cusdc': 'usdc',
+                            'cdai': 'dai',
+                            'csai': 'sai',
+                            'crep': 'rep',
+                            'cwbtc': 'wbtc'}
