@@ -10,9 +10,9 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 
-from compounds_research.utils import capitalize_camel_case
 from compounds_research import plotting
 from compounds_research import settings
+from compounds_research import utils
 
 
 FILEPATH = path.join(settings.DATA_PATH, "aave", "aave.jsonl")
@@ -51,7 +51,7 @@ def load_data(filepath=FILEPATH):
     for column in set(BIGDECIMAL_NORMALIZED_COLUMNS) & set(df.columns):
         df[column] /= 1e27
     df["Currency"] = df["reserve.symbol"]
-    return df.rename(capitalize_camel_case, axis="columns")
+    return df.rename(utils.capitalize_camel_case, axis="columns")
 
 
 def filter_currencies(df, currencies):
@@ -63,6 +63,12 @@ def filter_currencies(df, currencies):
 def unique_currencies(df):
     return df["Currency"].unique()
 
+
+def get_liquidity_median(df):
+    column = "Total Liquidity"
+    filtered = df[df[column] != 0]
+    amounts = filtered.groupby("Currency")[column].median() / 1e18
+    return utils.amounts_to_usd(amounts).sort_values()
 
 
 def plot_correlation(df, currency, output=None):

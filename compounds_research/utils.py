@@ -4,8 +4,12 @@ import pandas as pd
 from statsmodels.tsa.stattools import adfuller
 
 
+import pandas as pd
 
-def capitalize_camel_case(string):
+from compounds_research import settings
+
+
+def capitalize_camel_case(string: str) -> str:
     """Splits and capitalizes a camelCase string
 
     >>> capitalize_camel_case('stableBorrowRate')
@@ -46,3 +50,11 @@ class StationarityTests:
                 df['Critical Value (%s)'%key] = value
             print('Augmented Dickey-Fuller Test Results:')
             print(df)
+def get_token_usd_prices() -> pd.Series:
+    return pd.Series(settings.USD_PRICES)
+
+
+def amounts_to_usd(values: pd.Series) -> pd.Series:
+    prices = get_token_usd_prices()
+    result = values * prices
+    return result[~result.isna()]
