@@ -115,5 +115,5 @@ def make_dataframe(token: str, days):
     
     master_df.to_pickle('./data/' + str(token) + '.pkl')
 
-for token in token_addresses:
-    make_dataframe(token=token, days=list_dates)
+# for token in token_addresses:
+#     make_dataframe(token=token, days=list_dates)
