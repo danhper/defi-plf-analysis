@@ -6,6 +6,18 @@ import matplotlib.pyplot as plt
 
 from compounds_research import settings
 from compounds_research.compound.fetch_exchange_rates import get_exchange_rates, make_exchange_rate_df
+from compounds_research.compound.fetch_compound import make_dataframe
+
+c_markets = {
+    'cdai': 'dai',
+    'ceth': 'eth',
+    'cbat': 'bat',
+    'czrx': 'zrx',
+    'cusdc': 'usdc',
+    'csai': 'sai',
+    'crep': 'rep',
+    'cwbtc': 'btc'
+}
 
 def make_rates_df(rate_type: str, frequency: str):
     '''
@@ -113,3 +125,48 @@ def plot_raw_data(token: str, variable: str):
     ax.tick_params(axis='both', which='major', labelsize=18)
     ax.legend()
     fig.savefig('../PhD/overleaf/5e6bad2e6490390001d3c466/images/' + str(token)+ str(variable)+'.pdf', bbox_inches='tight', dpi = 300)
+
+def plot_market_rates(frequency: str='d'):
+    '''
+    Plot the borrow and supply interest rates for a given compound market.
+    '''
+    df_borrow = make_rates_df('borrow_rates', frequency)
+    df_supply = make_rates_df('supply_rates', frequency)
+    for market in c_markets.keys():
+        plt.clf()
+        plt.plot(df_borrow[market], label='Borrow')
+        plt.plot(df_supply[market], label='Supply')
+        plt.legend()
+        plt.title(c_markets[market])
+        plt.ylabel('Interest Rate')
+        plt.show()
+
+def plot_market_util(token: str):
+    '''
+    Plot the utilization, total funds borrowed and supplied for a given compound market.
+    '''
+    CTOKEN_FILEPATH = path.join(settings.DATA_PATH, 'compound', token+'.pkl')
+    df_market = pd.read_pickle(CTOKEN_FILEPATH)
+    fig, ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+    lns1 = ax1.plot(df_market['total_supply_history'], label='Supply')
+    lns2 = ax1.plot(df_market['total_borrows_history'], label='Borrow')
+    ax1.set_ylabel(token)
+    lns3 = ax2.plot(df_market['utilization_ratio'], label='Utilization', linestyle='--', linewidth=0.7, color='slategray', alpha=0.7)
+    ax2.set_ylabel('Utilization')
+    lns = lns1+lns2+lns3
+    labs = [l.get_label() for l in lns]
+    ax1.legend(lns, labs)
+    ax1.set_title(c_markets[token])
+
+def clean_api_data(file: str):
+    '''
+    Corrects the 'total_supply_history' for an existing ctoken.pkl file.
+    This correction is needed for data obtained from the compound API that has not been corrected yet.
+    '''
+    CTOKEN_FILEPATH = path.join(settings.DATA_PATH, "compound", file)
+    df_ctoken = pd.read_pickle(CTOKEN_FILEPATH)
+    df_ctoken['total_supply_history'] *= df_ctoken['exchange_rates']
+    df_ctoken['total_supply_history'] = df_ctoken['total_supply_history'].astype('int64')
+    df_ctoken['utilization_ratio'] = df_ctoken['total_borrows_history']/df_ctoken['total_supply_history']
+    df_ctoken.to_pickle(path.join(settings.DATA_PATH, 'compound', file))
