@@ -2,7 +2,7 @@ import re
 import pandas as pd
 
 from statsmodels.tsa.stattools import adfuller
-
+from compounds_research.compound.utils import get_comp_market, c_markets
 
 import pandas as pd
 
@@ -58,3 +58,11 @@ def amounts_to_usd(values: pd.Series) -> pd.Series:
     prices = get_token_usd_prices()
     result = values * prices
     return result[~result.isna()]
+
+def get_market(market: str, platform: str) -> pd.DataFrame:
+    '''
+    Returns a data frame with info for a given market on a given platform.
+    Columns: supply rate, borrow rate, total supply, total borrows, utilization
+    '''
+    if platform.lower() == 'compound':
+        return get_comp_market(market)

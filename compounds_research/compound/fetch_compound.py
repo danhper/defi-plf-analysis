@@ -32,7 +32,6 @@ end_date = int(dt.datetime(2020, 7, 5, 0).timestamp())
 start_date = int((dt.datetime(2020, 7, 5, 0) - dt.timedelta(days = 1000)).timestamp())
 
 
-
 def generate_dates(start: dt.datetime, end: dt.datetime,
                    buckets_count: int) -> Iterable[dt.datetime]:
     """Generates a list of ``buckets_count + 1`` dates between
@@ -107,6 +106,8 @@ def make_dataframe(token: str, days):
 
         df['total_borrows_history'] = pd.to_numeric(df['total_borrows_history'], downcast="float")
         df['total_supply_history'] = pd.to_numeric(df['total_supply_history'], downcast="float")
+        #Convert cTokens to underlying tokens: This is a flaw in the Compound API which needs to be corrected for the supply
+        df['total_supply_history'] = df['total_supply_history'] * df['exchange_rates']
 
         df['utilization_ratio'] = df['total_borrows_history'] / df['total_supply_history']
         df['spread'] = df['borrow_rates']- df['supply_rates']

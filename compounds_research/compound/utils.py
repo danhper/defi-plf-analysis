@@ -170,3 +170,13 @@ def clean_api_data(file: str):
     df_ctoken['total_supply_history'] = df_ctoken['total_supply_history'].astype('int64')
     df_ctoken['utilization_ratio'] = df_ctoken['total_borrows_history']/df_ctoken['total_supply_history']
     df_ctoken.to_pickle(path.join(settings.DATA_PATH, 'compound', file))
+
+def get_comp_market(market: str):
+    if market.lower() not in c_markets.keys():
+        if 'c'+market.lower() in c_markets.keys():
+            market = 'c'+market.lower()
+        else:
+            print('Invalid compound market: ', market)
+            return
+    CTOKEN_FILEPATH = path.join(settings.DATA_PATH, 'compound', market+'.pkl')
+    return pd.read_pickle(CTOKEN_FILEPATH)
