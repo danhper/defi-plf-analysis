@@ -68,10 +68,9 @@ def get_market(market: str, platform: str) -> pd.DataFrame:
     if platform.lower() == 'compound':
         return get_comp_market(market)
 
-def make_df_interest_rate_across_protocols(token: str):
+def make_df_interest_rate_across_protocols():
     '''
     For a given token, build a dataframe for the interest rate across protocols.
-    :token: e.g. 'eth'
     '''
     #Get compound rates
     df_compound = make_rates_df(rate_type= 'borrow_rates', frequency = 'D')
@@ -85,5 +84,8 @@ def make_df_interest_rate_across_protocols(token: str):
     df_aave_pivoted = df_aave_grouped['Variable Borrow Rate'].unstack(level=-1).transpose()
     df_aave = df_aave_pivoted.add_prefix('A_')
 
-    #Get DYdX rates
-    
+    #Need to add dydx rates --> need dataframe
+
+    df_master = pd.concat([df_compound, df_aave], axis=1)
+
+    return df_master
