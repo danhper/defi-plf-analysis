@@ -43,8 +43,8 @@ def make_ex_rate_and_interest_rate_df(quote_token: str,
                                         limit: int):
     '''
     For a token, return the final dataframe for the UIP analysis.
-    :token: e.g. 'eth'
-    :other_token: e.g. 'rep'
+    :quote_token: e.g. 'eth'
+    :base_token: e.g. 'rep'
     :rate_type: e.g. 'borrow_rates' or 'supply_rates'
     :frequency: e.g. 'D', 'W'
     :limit: number of data points to return
@@ -55,25 +55,12 @@ def make_ex_rate_and_interest_rate_df(quote_token: str,
     interest_rate_quote = interest_rates[quote_token]
     interest_rate_base = interest_rates[base_token]
 
-    #FIX THIS LOGIC
-    # ctoken_to_token_ex_rates = make_rates_df(rate_type='exchange_rates', frequency='D')
-    # ctoken_to_token_ex_rates.rename(columns=settings.COMPOUND_TOKEN_TRANSLATOR, inplace=True)
-    
-    exchange_rates_quoted_in_token = make_exchange_rate_df(quote_token, limit)
+    ex_rate = get_exchange_rates(base_symbol=base_token,
+                                quote_symbol=quote_token,
+                                limit=1000)['close']
+    ex_rate.rename(str(base_token) + '_' + str(quote_token), inplace=True)
 
-    #FIX THIS LOGIC
-    # ex_rates_final = ctoken_to_token_ex_rates.multiply(exchange_rates_quoted_in_token)
-
-    exchange_rate_diffs = exchange_rates_quoted_in_token.diff()
-
-    ex_rate_diff = exchange_rate_diffs[base_token]
-    ex_rate_diff.rename('ex_rate_diff', inplace=True).shift(periods=-1)
-
-    #CHECK ME : Is the shifting correct???
-    interest_rate_diff = interest_rate_quote - interest_rate_base
-    shifted_i_rate_diff = interest_rate_diff.rename('interest_rate_diff', inplace=True)
-
-    master_df = pd.concat([ex_rate_diff, shifted_i_rate_diff], axis=1, join='outer')
+    master_df = pd.concat([ex_rate, interest_rate_quote, interest_rate_base], axis=1, join='outer')
 
     return master_df.dropna()
 

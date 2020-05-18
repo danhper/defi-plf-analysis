@@ -26,3 +26,12 @@ COMPOUND_TOKEN_TRANSLATOR = {'ceth': 'eth',
                             'csai': 'sai',
                             'crep': 'rep',
                             'cwbtc': 'wbtc'}
+
+COMPOUND_TO_UPPER = {'ceth': 'ETH',
+                            'cbat': 'BAT',
+                            'czrx': 'ZRX',
+                            'cusdc': 'USDC',
+                            'cdai': 'DAI',
+                            'csai': 'SAI',
+                            'crep': 'REP',
+                            'cwbtc': 'WBTC'}
