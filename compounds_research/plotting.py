@@ -4,6 +4,8 @@ import seaborn as sns
 import matplotlib
 import matplotlib.pyplot as plt
 
+from compounds_research import utils
+
 
 HEATMAP_COLORS = "YlGnBu"
 
@@ -20,16 +22,16 @@ def plot_correlation(corr, **kwargs):
 
 
 def plot_interest_and_utilization_rates(df, x, y_interest, y_utilzation, **kwargs):
-    ax = plot_interest_rate(df, x, y_interest)
+    ax = plot_time_series(df, x, y_interest)
     plot_utilization_rate(df, x, y_utilzation, ax=ax)
     return ax
 
 
-def plot_interest_rate(df, x, y, **kwargs):
+def plot_time_series(df, x, y, **kwargs):
     plt.figure(figsize=(15, 10))
-    ax = sns.lineplot(x=x, y=y, data=df)
+    ax = sns.lineplot(x=x, y=y, data=df, **kwargs)
     ax.set_xlabel("Date")
-    ax.set_ylabel("Interest rate")
+    ax.set_ylabel(utils.capitalize_camel_case(y))
     plt.xticks(rotation=45)
     plt.tight_layout()
     return ax

@@ -7,7 +7,6 @@ from compounds_research.compound.utils import get_comp_market, c_markets, make_r
 import pandas as pd
 
 from compounds_research import settings
-from compounds_research.aave.analyze_aave import load_data
 
 
 def capitalize_camel_case(string: str) -> str:
@@ -72,6 +71,8 @@ def make_df_interest_rate_across_protocols():
     '''
     For a given token, build a dataframe for the interest rate across protocols.
     '''
+    from compounds_research.aave.analyze_aave import load_data
+
     #Get compound rates
     df_compound = make_rates_df(rate_type= 'borrow_rates', frequency = 'D')
     df_compound = df_compound.rename(columns=settings.COMPOUND_TO_UPPER)

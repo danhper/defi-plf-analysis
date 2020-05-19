@@ -1,5 +1,6 @@
 import argparse
 import datetime as dt
+import glob
 import json
 from os import path
 
@@ -41,33 +42,31 @@ BIGDECIMAL_NORMALIZED_COLUMNS = [
 
 
 def load_data(filepath=FILEPATH):
-    with open(filepath) as f:
-        df = pd.DataFrame(pd.json_normalize([json.loads(line) for line in f]))
+    df = pd.DataFrame()
+    for filename in glob.glob(path.join(settings.DATA_PATH, "aave", "*.csv")):
+        currency_df = pd.read_csv(filename)
+        currency_name = path.splitext(path.basename(filename))[0]
+        currency_df["symbol"] = currency_name
+        df = df.append(currency_df)
 
     df["datetime"] = pd.to_datetime(df["timestamp"], unit="s")
-    del df["timestamp"]
-    for column in set(BIGDECIMAL_COLUMNS) & set(df.columns):
-        df[column] = df[column].astype(float)
-    for column in set(BIGDECIMAL_NORMALIZED_COLUMNS) & set(df.columns):
-        df[column] /= 1e27
-    df["Currency"] = df["reserve.symbol"]
     return df.rename(utils.capitalize_camel_case, axis="columns")
 
 
 def filter_currencies(df, currencies):
     if not isinstance(currencies, list):
         currencies = [currencies]
-    return df[df["Currency"].isin(currencies)]
+    return df[df["Symbol"].isin(currencies)]
 
 
 def unique_currencies(df):
-    return df["Currency"].unique()
+    return df["Symbol"].unique()
 
 
 def get_liquidity_median(df):
     column = "Total Liquidity"
     filtered = df[df[column] != 0]
-    amounts = filtered.groupby("Currency")[column].median() / 1e18
+    amounts = filtered.groupby("Symbol")[column].median() / 1e18
     return utils.amounts_to_usd(amounts).sort_values()
 
 
@@ -77,9 +76,9 @@ def plot_correlation(df, currency, output=None):
     plotting.output_plot(output)
 
 
-def plot_utilization_rate(df, currency, output=None):
+def plot_time_series(df, currency, y, output=None):
     filtered_df = filter_currencies(df, currency)
-    plotting.plot_utilization_rate(filtered_df, x="Datetime", y="Utilization Rate")
+    plotting.plot_time_series(filtered_df, x="Datetime", y=y)
     plotting.output_plot(output)
 
 
@@ -97,9 +96,10 @@ correlation_parser = subparsers.add_parser("plot-correlation")
 correlation_parser.add_argument("currency", help="Currency to plot")
 correlation_parser.add_argument("-o", "--output", help="Output file")
 
-correlation_parser = subparsers.add_parser("plot-utilization-rate")
+correlation_parser = subparsers.add_parser("plot-time-series")
 correlation_parser.add_argument("currency", help="Currency to plot")
 correlation_parser.add_argument("-o", "--output", help="Output file")
+correlation_parser.add_argument("-y", help="Output file", required=True)
 
 correlation_parser = subparsers.add_parser("plot-interest-utilization")
 correlation_parser.add_argument("currency", help="Currency to plot")
