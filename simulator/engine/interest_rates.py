@@ -1,5 +1,7 @@
 from mpl_toolkits.mplot3d import axes3d
 import matplotlib.pyplot as plt
+from matplotlib import cm
+
 import numpy as np
 
 #if using a Jupyter notebook, include:
@@ -75,6 +77,41 @@ borrows = 12123057761032616257527258
 reserves = 172000131734217327575775
 cash = 6971699007994218847501026
 blocks_per_year = 2102400
+
+#Plot the function
+%matplotlib inline
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+
+reserves = 0
+supply = np.arange(0, 1000000, 10000)
+borrows = np.arange(0, 1000000, 10000)
+S, B = np.meshgrid(supply, borrows)
+
+br_dict = {}
+for s in supply:
+    s_scaled = int(s)
+    for b in borrows:
+        b_scaled = int(b)
+        cash = s - b
+        if cash <= 0:
+            br_dict[(s_scaled,b_scaled)] = 0
+        if cash > 0:
+            br = get_borrow_rate(cash=cash, borrows=b, reserves=reserves)
+            br_scaled = int(br)
+            br_dict[(s_scaled,b_scaled)] = br_scaled * blocks_per_year
+
+Z = np.ones((100,100))
+
+for key in br_dict:
+    i = int(key[0] / 10000)-1
+    j = int(key[1] / 10000)-1
+    Z[i][j] = int(br_dict[key])
+
+surf = ax.plot_surface(S, B, Z, rstride=1, cstride=1, cmap=cm.winter, linewidth=0, antialiased=True)
+# ax.set_zlim(0, 900000)
+
+plt.show()
 
 #State the objective function for interest rates. what are we trying to maximize? Thing to include: stability, efficiency, responsiveness, economic security?
 #Propose a new interest rate model that would maximize these factors, for each protocol given the supply and demand that was experienced, what would the interest rates look like? 
