@@ -77,7 +77,7 @@ def get_borrow_rate(cash: int, borrows: int, reserves: int):
         excess_util = util - KINK
         return int(excess_util * JUMP_MULTIPLIER_PER_BLOCK / 1e18 + normal_rate)
 
-def get_supply_rate(cash: int, borrows:int, reserves: int, reserve_factor: int):
+def get_supply_rate(cash: int, borrows: int, reserves: int, reserve_factor: int):
     '''
     In original function units, unmodified. 
     :cash: scaled up by 1e18.
