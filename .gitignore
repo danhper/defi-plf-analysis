@@ -1,3 +1,4 @@
 tmp/
 *.egg-info/
 .ipynb_checkpoints/
+*.pyc

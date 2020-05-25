@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from compounds_research import settings
 from compounds_research.compound.fetch_exchange_rates import get_exchange_rates, make_exchange_rate_df
 from compounds_research.compound.fetch_compound import make_dataframe
+from simulator.engine.dai_rate_params import PARAM_REGIMES, PARAM_REGIME_NUMS
 
 c_markets = {
     'cdai': 'dai',
@@ -18,6 +19,29 @@ c_markets = {
     'crep': 'rep',
     'cwbtc': 'btc'
 }
+
+def make_original_df(token, resampling_frequency):
+    '''
+    Build dataframe from original pickle files. 
+    :token: e.g. 'cdai'
+    :resampling_frequency: e.g. 'D'
+    '''
+    df = pd.read_pickle(path.join(settings.DATA_PATH, 'compound', token + '.pkl'))
+
+    df_regimes = pd.DataFrame(PARAM_REGIMES).transpose()
+    df_regimes['regime'] = range(len(df_regimes))
+    df_regimes['regime'] = df_regimes['regime']
+
+    merged = pd.merge(df, df_regimes, how='outer', left_index=True, right_index=True) 
+    merged['base_rate_per_block'] = merged['base_rate_per_block'].fillna(method='ffill')
+    merged['multiplier_per_block'] = merged['multiplier_per_block'].fillna(method='ffill')
+    merged['jump_multiplier_per_block'] = merged['jump_multiplier_per_block'].fillna(method='ffill')
+    merged['kink'] = merged['kink'].fillna(method='ffill')
+    merged['regime'] = merged['regime'].fillna(method='ffill')
+    
+    df_master = merged.resample(resampling_frequency).mean().dropna()
+    
+    return df_master
 
 def make_rates_df(rate_type: str, frequency: str):
     '''
