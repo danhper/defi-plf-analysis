@@ -22,13 +22,23 @@ def get_borrow_rate(cash: int, borrows: int, reserves: int, regime_params):
     :reserves: scaled up by 1e18.
     :regime_params: dictionary of governing regime params.
     '''
-    util = utilization_rate(cash=cash, borrows=borrows, reserves=reserves)
-    if util <= regime_params['kink']:
-        return int(util * regime_params['multiplier_per_block'] / 1e18 + regime_params['base_rate_per_block'])
-    else:
-        normal_rate = regime_params['kink'] * regime_params['multiplier_per_block'] / 1e18 +  regime_params['base_rate_per_block']
-        excess_util = util - regime_params['kink']
-        return int(excess_util * regime_params['jump_multiplier_per_block'] / 1e18 + normal_rate)
+    if regime_params['model'] == 'dai_rate':
+        util = utilization_rate(cash=cash, borrows=borrows, reserves=reserves)
+        if util <= regime_params['kink']:
+            return int(util * regime_params['multiplier_per_block'] / 1e18 + regime_params['base_rate_per_block'])
+        else:
+            normal_rate = regime_params['kink'] * regime_params['multiplier_per_block'] / 1e18 +  regime_params['base_rate_per_block']
+            excess_util = util - regime_params['kink']
+            return int(excess_util * regime_params['jump_multiplier_per_block'] / 1e18 + normal_rate)
+    if regime_params['model'] == 'jump_rate':
+        util = utilization_rate(cash=cash, borrows=borrows, reserves=reserves)
+        if util <= regime_params['kink']:
+            return int(util * regime_params['multiplier_per_block'] / 1e18 + regime_params['base_rate_per_block']) 
+        else:
+            normal_rate = regime_params['kink'] * regime_params['multiplier_per_block'] / 1e18 + regime_params['base_rate_per_block']
+            excess_util = util - regime_params['kink']
+            jump_multiplier = regime_params['multiplier_per_block'] * regime_params['jump']
+            return int(excess_util * jump_multiplier / 1e18 + normal_rate)
 
 def get_supply_rate(cash: int, borrows: int, reserves: int, regime_params, reserve_factor: int = RESERVE_FACTOR):
     '''

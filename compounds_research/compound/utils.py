@@ -30,7 +30,6 @@ def make_original_df(token, resampling_frequency):
 
     df_regimes = pd.DataFrame(PARAM_REGIMES).transpose()
     df_regimes['regime'] = range(len(df_regimes))
-    df_regimes['regime'] = df_regimes['regime']
 
     merged = pd.merge(df, df_regimes, how='outer', left_index=True, right_index=True) 
     merged['base_rate_per_block'] = merged['base_rate_per_block'].fillna(method='ffill')
@@ -38,8 +37,10 @@ def make_original_df(token, resampling_frequency):
     merged['jump_multiplier_per_block'] = merged['jump_multiplier_per_block'].fillna(method='ffill')
     merged['kink'] = merged['kink'].fillna(method='ffill')
     merged['regime'] = merged['regime'].fillna(method='ffill')
+    merged['model'] = merged['model'].fillna(method='ffill')
+    merged['jump'] = merged['jump'].fillna(method='ffill')
     
-    df_master = merged.resample(resampling_frequency).mean().dropna()
+    df_master = merged.resample(resampling_frequency).mean()
     
     return df_master
 
