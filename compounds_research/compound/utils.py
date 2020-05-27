@@ -39,10 +39,11 @@ def make_original_df(token, resampling_frequency):
     merged['regime'] = merged['regime'].fillna(method='ffill')
     merged['model'] = merged['model'].fillna(method='ffill')
     merged['jump'] = merged['jump'].fillna(method='ffill')
+    merged['reserve_factor'] = merged['reserve_factor'].fillna(method='ffill')
     
-    df_master = merged.resample(resampling_frequency).mean()
+    # df_master = merged.resample(resampling_frequency).mean()
     
-    return df_master
+    return merged
 
 def make_rates_df(rate_type: str, frequency: str):
     '''

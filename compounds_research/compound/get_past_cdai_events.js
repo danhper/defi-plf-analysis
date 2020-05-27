@@ -9,14 +9,14 @@ const address = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
 
 const cDaiContract = new web3.eth.Contract(abi, address);
 
-cDaiContract.getPastEvents(
-    'NewMarketInterestRateModel',
-    {
-      fromBlock: 8500000,
-      toBlock: 9000000
-    },
-    (err, events) => { console.log(events) }
-  );
+// cDaiContract.getPastEvents(
+//     'NewMarketInterestRateModel',
+//     {
+//       fromBlock: 8500000,
+//       toBlock: 9000000
+//     },
+//     (err, events) => { console.log(events) }
+//   );
 
   //JUMP RATE MODEL -- "jump_rate"
   // [
@@ -97,4 +97,49 @@ cDaiContract.getPastEvents(
   //   }
   // ]
   
-  
+  //Reserve factor mantissa changes
+  async function getReserveFactors() {
+
+    // var startingBlock;
+    // await web3.eth.getBlockNumber()
+    //     .then((number)=>{
+    //         startingBlock = number;            
+    //     });
+
+
+    await  cDaiContract.getPastEvents('NewReserveFactor',{
+            fromBlock: 10000000,
+            toBlock: 'latest'
+            },
+        (error, events) => { console.log(events) })
+
+}
+
+getReserveFactors()
+
+//Reserve Factor MAntissa only changed once on 
+// 158 days 15 hrs ago (Dec-20-2019 12:38:39 AM +UTC)
+// [
+//   {
+//     address: '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643',
+//     blockNumber: 9133173,
+//     transactionHash: '0xc8c5f7c143ec0834227b03b567a4a42f35f14cd7f73f4d054d10a52993339bce',
+//     transactionIndex: 110,
+//     blockHash: '0xa67df3b9122b5dec07bfd7cd1d4a3ade5d7d05e223b33e3b568c52d22b0bf9ff',
+//     logIndex: 110,
+//     removed: false,
+//     id: 'log_40168da0',
+//     returnValues: Result {
+//       '0': '100000000000000000',
+//       '1': '50000000000000000',
+//       oldReserveFactorMantissa: '100000000000000000',
+//       newReserveFactorMantissa: '50000000000000000'
+//     },
+//     event: 'NewReserveFactor',
+//     signature: '0xaaa68312e2ea9d50e16af5068410ab56e1a1fd06037b1a35664812c30f821460',
+//     raw: {
+//       data: '0x000000000000000000000000000000000000000000000000016345785d8a000000000000000000000000000000000000000000000000000000b1a2bc2ec50000',
+//       topics: [Array]
+//     }
+//   }
+// ]

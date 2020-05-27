@@ -56,3 +56,11 @@ def output_plot(output: str = None):
         plt.show()
     else:
         plt.savefig(output)
+
+def plot_kink_deltas(df_series, **kwargs):
+    plt.figure(figsize=(15, 10))
+    ax = sns.distplot(df_series, kde=False)
+    ax.set_xlabel("(Actual Rate) - (Kink Rate) ")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    return ax

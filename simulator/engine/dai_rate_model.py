@@ -1,6 +1,5 @@
 import numpy as np
 
-RESERVE_FACTOR = 50000000000000000
 BLOCKS_PER_YEAR = 2102400
 
 def utilization_rate(cash: int, borrows: int, reserves: int):
@@ -40,14 +39,14 @@ def get_borrow_rate(cash: int, borrows: int, reserves: int, regime_params):
             jump_multiplier = regime_params['multiplier_per_block'] * regime_params['jump']
             return int(excess_util * jump_multiplier / 1e18 + normal_rate)
 
-def get_supply_rate(cash: int, borrows: int, reserves: int, regime_params, reserve_factor: int = RESERVE_FACTOR):
+def get_supply_rate(cash: int, borrows: int, reserves: int, regime_params):
     '''
     In original function units, unmodified. 
     :cash: scaled up by 1e18.
     :borrows: scaled up by 1e18.
     :reserves: scaled up by 1e18.
     '''
-    one_minus_reserve_factor = 1e18 - reserve_factor
+    one_minus_reserve_factor = 1e18 - regime_params['reserve_factor']
     borrow_rate = get_borrow_rate(cash=cash, borrows=borrows, reserves=reserves, regime_params=regime_params)
     rate_to_pool = borrow_rate * one_minus_reserve_factor / 1e18
     return int(utilization_rate(cash=cash, borrows=borrows, reserves=reserves) * rate_to_pool / 1e18)
