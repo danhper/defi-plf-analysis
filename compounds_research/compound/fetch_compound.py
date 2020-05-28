@@ -29,7 +29,9 @@ variables = ['total_borrows_history', 'total_supply_history', 'utilization_ratio
 url = 'https://api.compound.finance/api/v2/market_history/graph'
 
 end_date = int(dt.datetime(2020, 7, 5, 0).timestamp())
-start_date = int((dt.datetime(2020, 7, 5, 0) - dt.timedelta(days = 1000)).timestamp())
+start_date = int((dt.datetime(2020, 7, 5, 0) - dt.timedelta(days = 200)).timestamp())
+
+# start_date = int((dt.datetime(2020, 7, 5, 0) - dt.timedelta(days = 1000)).timestamp())
 
 
 def generate_dates(start: dt.datetime, end: dt.datetime,
@@ -114,7 +116,7 @@ def make_dataframe(token: str, days):
 
         master_df = master_df.append(df)
     
-    master_df.to_pickle('./data/' + str(token) + '.pkl')
+    master_df.to_pickle('./data/' + str(token) +'_new.pkl')
 
 # for token in token_addresses:
 #     print(token)

@@ -27,6 +27,7 @@ def make_original_df(token, resampling_frequency):
     :resampling_frequency: e.g. 'D'
     '''
     df = pd.read_pickle(path.join(settings.DATA_PATH, 'compound', token + '.pkl'))
+    # df = pd.read_pickle(path.join(settings.DATA_PATH, token + '_new.pkl'))
 
     df_regimes = pd.DataFrame(PARAM_REGIMES).transpose()
     df_regimes['regime'] = range(len(df_regimes))
@@ -41,9 +42,9 @@ def make_original_df(token, resampling_frequency):
     merged['jump'] = merged['jump'].fillna(method='ffill')
     merged['reserve_factor'] = merged['reserve_factor'].fillna(method='ffill')
     
-    # df_master = merged.resample(resampling_frequency).mean()
+    df_master = merged.resample(resampling_frequency).mean()
     
-    return merged
+    return df_master
 
 def make_rates_df(rate_type: str, frequency: str):
     '''
