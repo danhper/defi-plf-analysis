@@ -48,3 +48,4 @@ data/aave/BUSD-deposits.json filter=lfs diff=lfs merge=lfs -text
 data/aave/REP-deposits.json filter=lfs diff=lfs merge=lfs -text
 data/aave/SNX-deposits.json filter=lfs diff=lfs merge=lfs -text
 data/aave/WBTC-deposits.json filter=lfs diff=lfs merge=lfs -text
+data/compound/cdai-events.jsonl.gz filter=lfs diff=lfs merge=lfs -text
