@@ -49,3 +49,11 @@ data/aave/REP-deposits.json filter=lfs diff=lfs merge=lfs -text
 data/aave/SNX-deposits.json filter=lfs diff=lfs merge=lfs -text
 data/aave/WBTC-deposits.json filter=lfs diff=lfs merge=lfs -text
 data/compound/cdai-events.jsonl.gz filter=lfs diff=lfs merge=lfs -text
+data/compound/events/ceth.jsonl.gz filter=lfs diff=lfs merge=lfs -text
+data/compound/events/crep.jsonl.gz filter=lfs diff=lfs merge=lfs -text
+data/compound/events/csai.jsonl.gz filter=lfs diff=lfs merge=lfs -text
+data/compound/events/cusdc.jsonl.gz filter=lfs diff=lfs merge=lfs -text
+data/compound/events/cwbtc.jsonl.gz filter=lfs diff=lfs merge=lfs -text
+data/compound/events/czrx.jsonl.gz filter=lfs diff=lfs merge=lfs -text
+data/compound/events/cbat.jsonl.gz filter=lfs diff=lfs merge=lfs -text
+data/compound/events/cdai.jsonl.gz filter=lfs diff=lfs merge=lfs -text
