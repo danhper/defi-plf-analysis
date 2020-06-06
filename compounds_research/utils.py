@@ -3,6 +3,7 @@ import pandas as pd
 
 from statsmodels.tsa.stattools import adfuller
 from compounds_research.compound.utils import get_comp_market, c_markets, make_rates_df
+from compounds_research.dydx.analyze_dydx import load_dydx_market
 
 import pandas as pd
 import numpy as np
@@ -73,29 +74,40 @@ def get_market(market: str, platform: str) -> pd.DataFrame:
     if platform.lower() == 'compound':
         return get_comp_market(market)
 
-def make_df_interest_rate_across_protocols():
+def make_df_interest_rate_across_protocols(token:str):
     '''
     For a given token, build a dataframe for the interest rate across protocols.
+    'token': e.g. 'DAI', 'ETH', 'USDC'
     '''
     from compounds_research.aave.analyze_aave import load_data
 
-    #Get compound rates
+    #Get Compound rates
     df_compound = make_rates_df(rate_type= 'borrow_rates', frequency = 'D')
     df_compound = df_compound.rename(columns=settings.COMPOUND_TO_UPPER)
+    df_compound = df_compound[[token]]
     df_compound = df_compound.add_prefix('C_')
+    df_compound.dropna(inplace=True)
 
     #Get Aave rates
     df_aave = load_data()
     df_aave = df_aave.set_index('Datetime')
-    df_aave_grouped = df_aave.groupby('Currency').resample('D').mean()
-    df_aave_pivoted = df_aave_grouped['Variable Borrow Rate'].unstack(level=-1).transpose()
-    df_aave = df_aave_pivoted.add_prefix('A_')
+    df_aave = df_aave[df_aave['Symbol']==token]
+    df_aave = df_aave.resample('D').mean()
+    df_aave = df_aave[['Variable Borrow Rate']]
+    df_aave = df_aave.rename(columns = {'Variable Borrow Rate': token})
+    df_aave = df_aave.add_prefix('A_')
 
-    #Need to add dydx rates --> need dataframe
+    #Get dYdX rates
+    token_lower_case = token.lower()
+    df_dydx = load_dydx_market(token_lower_case)
+    df_dydx = df_dydx.resample('D').mean()
+    df_dydx = df_dydx[['interest_rate']]
+    df_dydx = df_dydx.rename(columns = {'interest_rate': token})
+    df_dydx = df_dydx.add_prefix('D_')
 
-    df_master = pd.concat([df_compound, df_aave], axis=1)
+    df_master = pd.concat([df_compound, df_aave, df_dydx], axis=1)
 
-    return df_master
+    return df_master.dropna()
 
 
 def plot_cumulative_hist(locked_funds, skip_count=None, threshold=0.01, ticks_interval=None):
