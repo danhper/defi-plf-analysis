@@ -5,8 +5,14 @@ from statsmodels.tsa.stattools import adfuller
 from compounds_research.compound.utils import get_comp_market, c_markets, make_rates_df
 
 import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 from compounds_research import settings
+
+GRAY_INTENSITY = 0.5
+GRAY = (GRAY_INTENSITY, GRAY_INTENSITY, GRAY_INTENSITY, 1)
 
 
 def capitalize_camel_case(string: str) -> str:
@@ -90,3 +96,33 @@ def make_df_interest_rate_across_protocols():
     df_master = pd.concat([df_compound, df_aave], axis=1)
 
     return df_master
+
+
+def plot_cumulative_hist(locked_funds, skip_count=None, threshold=0.01, ticks_interval=None):
+    locked_funds = sorted([v for v in locked_funds if v > 0])
+    total = sum(locked_funds)
+    cum_funds = []
+    first_bucket = 0
+    current_total = 0
+    for fund in locked_funds:
+        current_total += fund
+        # only start adding at threshold (default = 1%) to avoid having to many data points
+        if (skip_count is not None and first_bucket >= skip_count) or \
+            (skip_count is None and current_total / total >= threshold):
+            cum_funds.append(current_total)
+        else:
+            first_bucket += 1
+    heights = [v / total for v in cum_funds]
+    x = np.arange(first_bucket, first_bucket + len(heights))
+    fig, ax = plt.subplots(figsize=(8, 4))
+    plt.bar(x, heights, width=1.0, color=GRAY)
+
+    if ticks_interval is None:
+        ticks_interval = len(x) // 15
+    ax.set_xticks(x[::ticks_interval])
+    plt.xticks(rotation=45)
+    ax.set_yticklabels(["{0}%".format(int(v * 100)) for v in ax.get_yticks()])
+    ax.set_ylabel("Cumulative percentage of locked funds")
+    ax.set_xlabel("Number of accounts")
+    plt.tight_layout(w_pad=0.5)
+    return ax
