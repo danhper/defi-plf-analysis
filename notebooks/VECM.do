@@ -48,7 +48,7 @@ vecrank c_dai a_dai, lags(4) levela // suggests 1 cointegrating equations - Joha
 //VECM fitting
 vec c_dai a_dai, rank(1) lags(4)
 eststo: quietly vec c_dai a_dai, rank(1) lags(4)
-esttab using PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/stata_results_dai.tex, label replace booktabs
+esttab using PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/stata_results_dai_original.tex, label replace booktabs
 
 //Specification testing
 predict ce, ce
@@ -138,8 +138,9 @@ veclmar, mlag(4) // looks like there's some SC. increase lags to 3
 
 //New Spec
 vec c_usdc a_usdc d_usdc, rank(2) lags(3)
+eststo clear
 eststo: quietly vec c_usdc a_usdc d_usdc, rank(2) lags(3)
-esttab using PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/stata_results_usdc.tex, label replace booktabs
+esttab using PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/stata_results_usdc_original.tex, label replace booktabs
 
 predict ce3, ce equ(#1)
 twoway line ce3 date, lwidth(medium) xtitle("")
@@ -163,9 +164,12 @@ irf create vec1, set(vecintro, replace) step(24)
 irf graph oirf, impulse(c_usdc d_usdc) response(a_usdc) yline(0) xtitle("Steps from shock")
 graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_CUSDCDUSDC_R_AUSDC.pdf, replace
 
-
 irf graph oirf, impulse(a_usdc d_usdc) response(c_usdc) yline(0) xtitle("Steps from shock") 
 graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_AUSDCDUSDC_R_CUSDC.pdf, replace
 
 irf graph oirf, impulse(c_usdc a_usdc) response(d_usdc) yline(0) xtitle("Steps from shock")
 graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_AUSDCCUSDC_R_DUSDC.pdf, replace
+
+irf graph oirf, impulse(c_usdc) response(a_usdc d_usdc) yline(0) xtitle("Steps from shock")
+graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_CUSDC_R_DUSDCAUSDC.pdf, replace
+
