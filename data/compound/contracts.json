@@ -38,5 +38,10 @@
     "name": "czrx",
     "address": "0xb3319f5d18bc0d84dd1b4825dcde5d5f7266d407",
     "deployed": 7710733
+  },
+  {
+    "name": "cusdt",
+    "address": "0xf650c3d88d12db855b8bf7d11be6c55a4e07dcc9",
+    "deployed": 9879363
   }
 ]
