@@ -18,13 +18,13 @@ graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/DAI.pdf, replac
 
 //Stationarity testing - levels
 
-dfuller c_dai, lags (1) trend regress 
+dfuller c_dai, regress //appropriate number of lags
 // Non-stationary
 
-dfuller a_dai, lags (1) trend regress
+dfuller a_dai, regress //appropriate number of lags
 // Stationary
 
-dfuller d_dai, lags (1) trend regress
+dfuller d_dai, lags (1) regress //appropriate number of lags
 // Non-stationary
 
 //Stationarity testing - differences
@@ -39,15 +39,15 @@ dfuller d.d_dai, lags (1) trend regress
 // Stationary
 
 //Lag selection
-varsoc c_dai a_dai
+varsoc c_dai a_dai d_dai
 //suggests to use 4 lags. NB tested and d_dai does not cointegrate with either of the other two series
 
 //Cointegrating equations
-vecrank a_dai c_dai, lags(4) levela // suggests 1 cointegrating equations - Johansen test. Fail to reject null of at most 1 cointegrating equation. 
+vecrank a_dai c_dai d_dai, lags(4) levela // suggests 1 cointegrating equations - Johansen test. Fail to reject null of at most 1 cointegrating equation. 
 
 // VECM fitting
-vec c_dai a_dai, rank(1) lags(4)
-eststo: quietly vec c_dai a_dai, rank(1) lags(4)
+vec c_dai a_dai d_dai, rank(1) lags(4)
+eststo: quietly vec c_dai a_dai d_dai, rank(1) lags(4)
 esttab using PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/stata_results_dai_original.tex, label replace booktabs
 
 //Specification testing
@@ -98,7 +98,7 @@ graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/USDC.pdf, repla
 dfuller c_usdc, lags (1) trend regress 
 // unit root
 
-dfuller a_usdc, lags (1) trend regress 
+dfuller a_usdc, lags (1) trend regress
 // Stationary
 dfuller d_usdc, lags (1) trend regress 
 // unit root
@@ -172,4 +172,3 @@ graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_AUSDCCUSDC_R_
 
 irf graph oirf, impulse(c_usdc) response(a_usdc d_usdc) yline(0) xtitle("Steps from shock")
 graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_CUSDC_R_DUSDCAUSDC.pdf, replace
-
