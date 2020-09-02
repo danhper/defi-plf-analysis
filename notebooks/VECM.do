@@ -8,9 +8,9 @@ gen date=date(v1,"YMD###")
 format %tdDD/NN/CCYY date
 tsset date
 
-label variable c_dai `"Compound Dai"'
-label variable a_dai `"Aave Dai"'
-label variable d_dai `"dYdX Dai"'
+label variable c_dai `"Compound DAI"'
+label variable a_dai `"Aave DAI"'
+label variable d_dai `"dYdX DAI"'
 
 //Plots
 twoway (line c_dai date, lwidth(medium)) (line a_dai date, lpattern(shortdash) lwidth(medium)) (line d_dai date, lpattern(longdash) lwidth(medium)), ytitle("Borrow interest rate") xtitle("")
@@ -19,33 +19,33 @@ graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/DAI.pdf, replac
 //Stationarity testing - levels
 
 dfuller c_dai, lags (1) trend regress 
-// unit root at 1%
+// Non-stationary
 
 dfuller a_dai, lags (1) trend regress
 // Stationary
 
-dfuller d_dai, lags (1) trend regress 
-// unit root
+dfuller d_dai, lags (1) trend regress
+// Non-stationary
 
 //Stationarity testing - differences
 
-dfuller d.c_dai, lags (1) trend regress 
+dfuller d.c_dai, lags (1) trend regress
 // Stationary
 
-dfuller d.a_dai, lags (1) trend regress 
+dfuller d.a_dai, lags (1) trend regress
 // Stationary
 
-dfuller d.d_dai, lags (1) trend regress 
+dfuller d.d_dai, lags (1) trend regress
 // Stationary
 
 //Lag selection
-varsoc c_dai a_dai 
+varsoc c_dai a_dai
 //suggests to use 4 lags. NB tested and d_dai does not cointegrate with either of the other two series
 
 //Cointegrating equations
-vecrank c_dai a_dai, lags(4) levela // suggests 1 cointegrating equations - Johansen test. Fail to reject null of at most 1 cointegrating equation. 
+vecrank a_dai c_dai, lags(4) levela // suggests 1 cointegrating equations - Johansen test. Fail to reject null of at most 1 cointegrating equation. 
 
-//VECM fitting
+// VECM fitting
 vec c_dai a_dai, rank(1) lags(4)
 eststo: quietly vec c_dai a_dai, rank(1) lags(4)
 esttab using PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/stata_results_dai_original.tex, label replace booktabs
@@ -72,7 +72,7 @@ vecnorm
 irf create vec1, set(vecintro, replace) step(24)
 irf graph oirf, impulse(c_dai) response(a_dai) yline(0) xtitle("Steps from shock")
 graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_CDAI_R_DAI.pdf, replace
-// shock to cdai has a permanent effect on dai
+// shock to cdai has a permanent effect on a_dai
 
 irf graph oirf, impulse(a_dai) response(c_dai) yline(0) xtitle("Steps from shock")
 graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_ADAI_R_CDAI.pdf, replace
