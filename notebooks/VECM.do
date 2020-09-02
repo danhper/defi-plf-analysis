@@ -40,14 +40,14 @@ dfuller d.d_dai, lags (1) trend regress
 
 //Lag selection
 varsoc c_dai a_dai d_dai
-//suggests to use 4 lags. NB tested and d_dai does not cointegrate with either of the other two series
+//suggests to use 4 lags. However this results in some misspeccifation in later testing, so increase so 5. 
 
 //Cointegrating equations
-vecrank a_dai c_dai d_dai, lags(4) levela // suggests 1 cointegrating equations - Johansen test. Fail to reject null of at most 1 cointegrating equation. 
+vecrank a_dai c_dai d_dai, lags(5) levela // suggests 1 cointegrating equations - Johansen test. Fail to reject null of at most 1 cointegrating equation. 
 
 // VECM fitting
-vec c_dai a_dai d_dai, rank(1) lags(4)
-eststo: quietly vec c_dai a_dai d_dai, rank(1) lags(4)
+vec c_dai a_dai d_dai, rank(1) lags(5)
+eststo: quietly vec c_dai a_dai d_dai, rank(1) lags(5)
 esttab using PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/stata_results_dai_original.tex, label replace booktabs
 
 //Specification testing
@@ -61,7 +61,7 @@ graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/DAI_vecstable.p
 //looks good
 
 //Check for serial correlation in the residuals
-veclmar, mlag(4) 
+veclmar, mlag(5) 
 // looks good
 
 //Check that the errors are normally distributed
@@ -77,6 +77,14 @@ graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_CDAI_R_DAI.pd
 irf graph oirf, impulse(a_dai) response(c_dai) yline(0) xtitle("Steps from shock")
 graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_ADAI_R_CDAI.pdf, replace
 // same, vice versa
+
+irf graph oirf, impulse(d_dai) response(c_dai) yline(0) xtitle("Steps from shock")
+graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_DDAI_R_CDAI.pdf, replace
+// same
+
+irf graph oirf, impulse(d_dai) response(a_dai) yline(0) xtitle("Steps from shock")
+graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_DDAI_R_ADAI.pdf, replace
+// same, strong
 
 ///////////////////////////USDC//////////////////////////////////////////
 
