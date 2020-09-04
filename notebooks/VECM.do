@@ -12,6 +12,12 @@ label variable c_dai `"Compound DAI"'
 label variable a_dai `"Aave DAI"'
 label variable d_dai `"dYdX DAI"'
 
+//Generate logged variables
+
+// gen log_c_dai = log(c_dai)
+// gen log_a_dai = log(a_dai)
+// gen log_d_dai = log(d_dai)
+
 //Plots
 twoway (line c_dai date, lwidth(medium)) (line a_dai date, lpattern(shortdash) lwidth(medium)) (line d_dai date, lpattern(longdash) lwidth(medium)), ytitle("Borrow interest rate") xtitle("")
 graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/DAI.pdf, replace
@@ -43,7 +49,7 @@ varsoc c_dai a_dai d_dai
 //suggests to use 4 lags. However this results in some misspeccifation in later testing, so increase so 5. 
 
 //Cointegrating equations
-vecrank a_dai c_dai d_dai, lags(5) levela // suggests 1 cointegrating equations - Johansen test. Fail to reject null of at most 1 cointegrating equation. 
+vecrank a_dai c_dai d_dai, lags(5) // suggests 1 cointegrating equations - Johansen test. Fail to reject null of at most 1 cointegrating equation. 
 
 // VECM fitting
 vec c_dai a_dai d_dai, rank(1) lags(5)
