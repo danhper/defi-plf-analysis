@@ -2,6 +2,7 @@ const fs = require('fs').promises
 const path = require('path')
 const Web3 = require('web3')
 const signale = require('signale')
+const { await } = require('signale')
 
 const web3 = new Web3(new Web3.providers.HttpProvider('http://satoshi.doc.ic.ac.uk:8545'))
 
@@ -31,20 +32,13 @@ async function fetchEvents (contract, params, retries = 3) {
   try {
     return await contract.getPastEvents(params)
   } catch (e) {}
-  signale.warn('failed to fetch ', params, 'trying in batches of', batchSize / 10)
   // split in smaller chunks if this fails
-  try {
-    return await fetchEventsSplitBatch(contract, params, 10)
-  } catch (e) {}
-  signale.warn('failed to fetch ', params, 'trying in batches of', batchSize / 100)
-  try {
-    return await fetchEventsSplitBatch(contract, params, 100)
-  } catch (e) {}
-  signale.warn('failed to fetch ', params, 'trying in batches of', batchSize / 1000)
-  try {
-    return await fetchEventsSplitBatch(contract, params, 1000)
-  } catch (e) {}
-  signale.warn('failed to fetch ', params, 'skipping failed blocks', batchSize / 10000)
+  for (const size of [10, 100, 1000, 10000]) {
+    signale.warn('failed to fetch ', params, 'trying in batches of', batchSize / size)
+    try {
+      return await fetchEventsSplitBatch(contract, params, size)
+    } catch (e) {}
+  }
   return await fetchEventsSplitBatch(contract, params, 10000, { ignoreErrors: true })
 }
 
@@ -73,9 +67,16 @@ async function getContractEvents (contract, startBlock, output, options = {}) {
 }
 
 async function fetchBulk (abi, contracts, outputDir) {
-  await Promise.all(contracts.map(contractConfig => {
+  const abiState = await fs.lstat(abi)
+  await Promise.all(contracts.map(async contractConfig => {
+    let abiPath = abi
+    if (abiState.isDirectory()) {
+      abiPath = path.join(abiPath, contractConfig.name + '.json')
+    }
+    const rawABI = await fs.readFile(abiPath, 'utf-8')
+    const parsedABI = JSON.parse(rawABI)
     const output = path.join(outputDir, contractConfig.name + '.jsonl')
-    const contract = new web3.eth.Contract(abi, contractConfig.address)
+    const contract = new web3.eth.Contract(parsedABI, contractConfig.address)
     contract.name = contractConfig.name
     return getContractEvents(contract, contractConfig.deployed, output)
   }))
@@ -100,13 +101,12 @@ async function fetchBulk (abi, contracts, outputDir) {
 
   program
     .command('fetch-bulk')
-    .requiredOption('--abi <string>', 'path to the JSON ABI file')
+    .requiredOption('--abi <string>', 'path to the JSON ABI file, or directory with ABIS')
     .requiredOption('-c, --config <string>', 'addresses with config')
     .requiredOption('-o, --output <string>', 'output directory')
     .action(async (prog) => {
-      const abi = require(prog.abi)
       const config = require(prog.config)
-      await fetchBulk(abi, config, prog.output)
+      await fetchBulk(prog.abi, config, prog.output)
     })
 
   await program.parseAsync(process.argv)
