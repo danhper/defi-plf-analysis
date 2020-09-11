@@ -1,6 +1,5 @@
 clear
 set scheme s1mono
-graph set ps fontface Times
 //////////////////////////////DAI/////////////////////////////////////
 
 import delimited "PhD/compounds-research/data/stata/interest_rates_dai.csv", encoding(ISO-8859-2)
@@ -12,7 +11,6 @@ label variable c_dai `"Compound DAI"'
 label variable a_dai `"Aave DAI"'
 label variable d_dai `"dYdX DAI"'
 
-graph set window fontface "Times New Roman"
 
 //Plots
 twoway (line c_dai date, lwidth(medium)) (line a_dai date, lpattern(shortdash) lwidth(medium)) (line d_dai date, lpattern(longdash) lwidth(medium)), ytitle("Borrow interest rate") xtitle("")
@@ -98,7 +96,6 @@ graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_CDAI_R_DDAIAD
 ///////////////////////////USDC//////////////////////////////////////////
 
 clear
-graph set ps fontface Times
 import delimited "PhD/compounds-research/data/stata/interest_rates_usdc.csv", encoding(ISO-8859-2)
 gen date=date(v1,"YMD###")
 format %tdDD/NN/CCYY date
@@ -108,7 +105,6 @@ label variable c_usdc `"Compound USDC"'
 label variable a_usdc `"Aave USDC"'
 label variable d_usdc `"dYdX USDC"'
 
-graph set window fontface "Times New Roman"
 
 //Plots
 twoway (line c_usdc date, lwidth(medium)) (line a_usdc date, lpattern(shortdash) lwidth(medium)) (line d_usdc date, lpattern(longdash) lwidth(medium)), ytitle("Borrow interest rate") xtitle("")
