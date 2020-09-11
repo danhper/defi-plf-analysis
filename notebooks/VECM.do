@@ -1,6 +1,6 @@
 clear
 set scheme s1mono
-
+graph set ps fontface Times
 //////////////////////////////DAI/////////////////////////////////////
 
 import delimited "PhD/compounds-research/data/stata/interest_rates_dai.csv", encoding(ISO-8859-2)
@@ -12,6 +12,7 @@ label variable c_dai `"Compound DAI"'
 label variable a_dai `"Aave DAI"'
 label variable d_dai `"dYdX DAI"'
 
+graph set window fontface "Times New Roman"
 
 //Plots
 twoway (line c_dai date, lwidth(medium)) (line a_dai date, lpattern(shortdash) lwidth(medium)) (line d_dai date, lpattern(longdash) lwidth(medium)), ytitle("Borrow interest rate") xtitle("")
@@ -52,9 +53,13 @@ eststo: quietly vec c_dai a_dai d_dai, rank(2) lags(5)
 esttab using PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/stata_results_dai_original.tex, label replace booktabs
 
 //Specification testing
-predict ce, ce
+predict ce, ce equ(#1)
 twoway line ce date, lwidth(medium) xtitle("")
 graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/DAI_CE_1.pdf, replace
+
+predict ce1, ce equ(#2)
+twoway line ce1 date, lwidth(medium) xtitle("")
+graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/DAI_CE_2.pdf, replace
 
 //Check whether we have correctly specified the number of cointegrating equations
 vecstable, graph
@@ -69,27 +74,31 @@ veclmar, mlag(5)
 vecnorm 
 // Strongly reject normality
 
-//Generate IRF
+// //Generate IRF
 irf create vec1, set(vecintro, replace) step(24)
-irf graph oirf, impulse(c_dai) response(a_dai) yline(0) xtitle("Steps from shock")
-graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_CDAI_R_DAI.pdf, replace
-// shock to cdai has a permanent effect on a_dai
+// irf graph oirf, impulse(c_dai) response(a_dai) yline(0) xtitle("Steps from shock")
+// graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_CDAI_R_DAI.pdf, replace
+// // shock to cdai has a permanent effect on a_dai
+//
+// irf graph oirf, impulse(a_dai) response(c_dai) yline(0) xtitle("Steps from shock")
+// graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_ADAI_R_CDAI.pdf, replace
+// // same, vice versa
+//
+// irf graph oirf, impulse(d_dai) response(c_dai) yline(0) xtitle("Steps from shock")
+// graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_DDAI_R_CDAI.pdf, replace
+// // same
+//
+// irf graph oirf, impulse(d_dai) response(a_dai) yline(0) xtitle("Steps from shock")
+// graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_DDAI_R_ADAI.pdf, replace
+// // same, strong
 
-irf graph oirf, impulse(a_dai) response(c_dai) yline(0) xtitle("Steps from shock")
-graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_ADAI_R_CDAI.pdf, replace
-// same, vice versa
-
-irf graph oirf, impulse(d_dai) response(c_dai) yline(0) xtitle("Steps from shock")
-graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_DDAI_R_CDAI.pdf, replace
-// same
-
-irf graph oirf, impulse(d_dai) response(a_dai) yline(0) xtitle("Steps from shock")
-graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_DDAI_R_ADAI.pdf, replace
-// same, strong
+irf graph oirf, impulse(c_dai) response(a_dai d_dai) yline(0) xtitle("Steps from shock")
+graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_CDAI_R_DDAIADAI.pdf, replace
 
 ///////////////////////////USDC//////////////////////////////////////////
 
 clear
+graph set ps fontface Times
 import delimited "PhD/compounds-research/data/stata/interest_rates_usdc.csv", encoding(ISO-8859-2)
 gen date=date(v1,"YMD###")
 format %tdDD/NN/CCYY date
@@ -98,6 +107,8 @@ tsset date
 label variable c_usdc `"Compound USDC"'
 label variable a_usdc `"Aave USDC"'
 label variable d_usdc `"dYdX USDC"'
+
+graph set window fontface "Times New Roman"
 
 //Plots
 twoway (line c_usdc date, lwidth(medium)) (line a_usdc date, lpattern(shortdash) lwidth(medium)) (line d_usdc date, lpattern(longdash) lwidth(medium)), ytitle("Borrow interest rate") xtitle("")
@@ -172,14 +183,14 @@ vecnorm // Strongly reject normality
 //Generate IRF
 irf create vec1, set(vecintro, replace) step(24)
 
-irf graph oirf, impulse(c_usdc d_usdc) response(a_usdc) yline(0) xtitle("Steps from shock")
-graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_CUSDCDUSDC_R_AUSDC.pdf, replace
-
-irf graph oirf, impulse(a_usdc d_usdc) response(c_usdc) yline(0) xtitle("Steps from shock") 
-graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_AUSDCDUSDC_R_CUSDC.pdf, replace
-
-irf graph oirf, impulse(c_usdc a_usdc) response(d_usdc) yline(0) xtitle("Steps from shock")
-graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_AUSDCCUSDC_R_DUSDC.pdf, replace
+// irf graph oirf, impulse(c_usdc d_usdc) response(a_usdc) yline(0) xtitle("Steps from shock")
+// graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_CUSDCDUSDC_R_AUSDC.pdf, replace
+//
+// irf graph oirf, impulse(a_usdc d_usdc) response(c_usdc) yline(0) xtitle("Steps from shock") 
+// graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_AUSDCDUSDC_R_CUSDC.pdf, replace
+//
+// irf graph oirf, impulse(c_usdc a_usdc) response(d_usdc) yline(0) xtitle("Steps from shock")
+// graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_AUSDCCUSDC_R_DUSDC.pdf, replace
 
 irf graph oirf, impulse(c_usdc) response(a_usdc d_usdc) yline(0) xtitle("Steps from shock")
 graph export PhD/overleaf/5e6bad2e6490390001d3c466/stata_outputs/I_CUSDC_R_DUSDCAUSDC.pdf, replace
